@@ -1,9 +1,11 @@
 # zh2wc ml6vq
-import pygame
-import gamebox
 import sys
-import numpy as np
 import time
+
+import numpy as np
+import pygame
+
+import gamebox
 
 """
 This game is to make a traditional "snake" game.
@@ -34,7 +36,42 @@ left_right_wall = pygame.transform.scale(wall, [wall_size, 600])
 top_down_wall = pygame.transform.scale(wall, [800 - 2 * wall_size, wall_size])  # make the wall
 grass = pygame.image.load("grass.png")
 grass = pygame.transform.scale(grass, [800 - 2 * wall_size, 600 - 2 * wall_size])
-crab = pygame.image.load("crab.jpg") # load the crab image
+crab = pygame.image.load("crab.jpg")  # load the crab image
+crab_size = 50
+crab = pygame.transform.scale(crab, [crab_size, crab_size])
+crab_exist = False
+crab_speed = 2
+
+
+def crab_generator():
+    """
+    generste the crab
+    :return: a rectangle on where the crab is drawn on
+    """
+    x, y = [np.random.randint(wall_size + snake_size // 2, 800 - snake_size // 2 - wall_size),
+            np.random.randint(wall_size + snake_size // 2, 600 - snake_size // 2 - wall_size)]
+    crab_initial_pos = pygame.Rect(x, y, crab_size, crab_size)
+    return crab_initial_pos
+
+
+def crab_movement(crab_location, frame):  # change here
+    """
+    Move the crab
+    :param crab_location: the current crab postion
+    :return: return a new Rect with new position
+    """
+    if abs(snake_set["player1"][0].x - crab_location.x) >= \
+            abs(snake_set["player1"][0].y - crab_location.y):
+        if snake_set["player1"][0].x >= crab_location.x:
+            # if the snake_head is on the right of the crab, the crab chases the snake head
+            return crab_location.move(crab_speed, 0)
+        else:
+            return crab_location.move(-crab_speed, 0)
+    else:
+        if snake_set["player1"][0].y >= crab_location.y:
+            return crab_location.move(0, crab_speed)
+        else:
+            return crab_location.move(0, -crab_speed)
 
 
 def snake_generator(keys):
@@ -262,6 +299,8 @@ def tick(key):
     :return:
     """
     global food_exist
+    global crab_exist
+    global crab_location
     global food
     global frame  # just for debug
     frame += 1
@@ -281,14 +320,20 @@ def tick(key):
             # check if the food has been eaten and generate a new body
             snake_generator(keys)
             food_exist = False
-
+        if not crab_exist:
+            # only one food can exit at a time
+            crab_location = crab_generator()
+            crab_exist = True
         draw_background()
+        camera.draw(food)
+        camera.__dict__['_surface'].blit(crab, crab_location)  # draw the crab on the surface
+
         player_have_lost = traverse_snake()  # move snake and draw them. Needs to be put after camera.clear()
         player_have_lost1 = touch_wall()
-        camera.draw(food)
         if player_have_lost or player_have_lost1:  # make lose instantly needs to work on because it acts twice
             real_lose = True
             break
+    crab_location = crab_movement(crab_location, frame)
     draw_points()
     if real_lose:
         """
@@ -333,7 +378,7 @@ def draw_background():
 
 
 def end_frame(player_have_lost):
-    text1 = my_font.render(player_have_lost+" has lost!", True, (0, 200, 0))
+    text1 = my_font.render(player_have_lost + " has lost!", True, (0, 200, 0))
     while True:
         init_screen.fill(white)
         init_screen.blit(text1, [50, 200])
@@ -356,6 +401,7 @@ def end_frame(player_have_lost):
             if mode2.x - mode2.width / 2 < camera.mousex < mode2.x + mode2.width / 2:
                 if mode2.y - mode2.height / 2 < camera.mousey < mode2.y + mode2.height / 2:
                     sys.exit()
+
 
 def start_frame():
     global player_number
@@ -407,6 +453,7 @@ Have fun!'''.split('\n')
     for players in range(player_number):
         snake_set["player{}".format(players + 1)] = add_player(players + 1)
     gamebox.timer_loop(30, tick)  # start the actual game
+
 
 def add_player(players):
     start_position = (800 - 2 * wall_size) // (player_number + 1)
