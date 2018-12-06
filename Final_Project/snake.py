@@ -103,7 +103,34 @@ Have fun!'''.split('\n')
         instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
         init_screen.blit(instruction, [50, 320 + 30 * i])
 
+def animation():
+    global count
+    snake.image = images[count//2 % len(images)]
+    count += 1
+    camera.clear('light green')
+    draw_little()
+    camera.draw(snake)
+    camera.display()
 
+def draw_little():
+    instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
+Hitting the boarder or any part of the snake will make you lose the game.
+In two-player mode, player two will use "w" for up, "s" for down, "a" for left, and "d" for right.
+Have fun!'''.split('\n')
+    mode1 = gamebox.from_image(200, 200, 'button.png')
+    mode1.scale_by(0.4)
+    mode2 = gamebox.from_image(600, 200, 'button.png')
+    mode2.scale_by(0.4)
+    camera.draw(gamebox.from_text(400, 100, "MODE SELECTION", 40, 'black', True))
+    camera.draw(mode1)
+    camera.draw(gamebox.from_text(200, 200, "one player", 25, 'black', True))
+    camera.draw(mode2)
+    camera.draw(gamebox.from_text(600, 200, "Two players", 25, 'black', True))
+    camera.draw(gamebox.from_text(105, 300, "Instructions: ", 25, 'dark green'))
+    for i in range(4):
+        instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
+        init_screen.blit(instruction, [50, 320 + 30 * i])
+        
 def snake_generator(keys):
     """
     generate the snake using linked list data structure
