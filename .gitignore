@@ -2,5 +2,4 @@ backup1.py
 backup.py
 __pycache__
 __init.py__
-
-.idea
+.idea/

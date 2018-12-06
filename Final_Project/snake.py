@@ -73,7 +73,34 @@ def crab_movement(crab_location, frame):  # change here
         else:
             return crab_location.move(0, -crab_speed)
 
+def animation():
+    global count
+    snake.image = images[count//2 % len(images)]
+    count += 1
+    camera.clear('light green')
+    draw_little()
+    camera.draw(snake)
+    camera.display()
 
+def draw_little():
+    instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
+Hitting the boarder or any part of the snake will make you lose the game.
+In two-player mode, player two will use "w" for up, "s" for down, "a" for left, and "d" for right.
+Have fun!'''.split('\n')
+    mode1 = gamebox.from_image(200, 200, 'button.png')
+    mode1.scale_by(0.4)
+    mode2 = gamebox.from_image(600, 200, 'button.png')
+    mode2.scale_by(0.4)
+    camera.draw(gamebox.from_text(400, 100, "MODE SELECTION", 40, 'black', True))
+    camera.draw(mode1)
+    camera.draw(gamebox.from_text(200, 200, "one player", 25, 'black', True))
+    camera.draw(mode2)
+    camera.draw(gamebox.from_text(600, 200, "Two players", 25, 'black', True))
+    camera.draw(gamebox.from_text(105, 300, "Instructions: ", 25, 'dark green'))
+    for i in range(4):
+        instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
+        init_screen.blit(instruction, [50, 320 + 30 * i])
+        
 def snake_generator(keys):
     """
     generate the snake using linked list data structure
@@ -87,16 +114,20 @@ def snake_generator(keys):
 
     tail = snake_set[keys][1]  # this is the head # need to work on
     if tail.direction == "up":
-        body = gamebox.from_color(tail.x, tail.y + snake_size, "red", snake_size, snake_size)
+        body = gamebox.from_image(tail.x, tail.y + snake_size, 'body.png')
+        body.scale_by(0.3)
         body.direction = "up"
     elif tail.direction == "down":
-        body = gamebox.from_color(tail.x, tail.y - snake_size, "red", snake_size, snake_size)
+        body = gamebox.from_image(tail.x, tail.y - snake_size, 'body.png')
+        body.scale_by(0.3)
         body.direction = "down"
     elif tail.direction == "left":
-        body = gamebox.from_color(tail.x + snake_size, tail.y, "red", snake_size, snake_size)
+        body = gamebox.from_image(tail.x + snake_size, tail.y, 'body.png')
+        body.scale_by(0.3)
         body.direction = "left"
     elif tail.direction == "right":
-        body = gamebox.from_color(tail.x - snake_size, tail.y, "red", snake_size, snake_size)
+        body = gamebox.from_image(tail.x - snake_size, tail.y, 'body.png')
+        body.scale_by(0.3)
         body.direction = "right"
     body.next = None
     tail.next = body
@@ -183,7 +214,9 @@ def food_generator():
     """
     x, y = [np.random.randint(wall_size + snake_size // 2, 800 - snake_size // 2 - wall_size),
             np.random.randint(wall_size + snake_size // 2, 600 - snake_size // 2 - wall_size)]
-    return gamebox.from_color(x, y, "pink", snake_size, snake_size)
+    food = gamebox.from_image(x, y, 'food.png')
+    food.scale_by(0.05)
+    return food
 
 
 def check_for_turn(player, head, direction):
@@ -409,38 +442,24 @@ def start_frame():
     start_img = pygame.image.load("start_screen.png")
     text1 = my_font.render("Welcome To The Hungry Snake Game!", True, (0, 200, 0))
     text2 = my_font.render("Press Any Key to Start", True, (0, 200, 0))
-    instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
-Hitting the boarder or any part of the snake will make you lose the game.
-In two-player mode, player two will use "w" for up, "s" for down, "a" for left, and "d" for right.
-Have fun!'''.split('\n')
-    mode1 = gamebox.from_image(200, 200, 'button.png')
-    mode1.scale_by(0.4)
-    mode2 = gamebox.from_image(600, 200, 'button.png')
-    mode2.scale_by(0.4)
     init_screen.fill(white)
     init_screen.blit(start_img, [400, 300])
     init_screen.blit(text1, [50, 200])
     init_screen.blit(text2, [50, 250])
     pygame.display.flip()
+    mode1 = gamebox.from_image(200, 200, 'button.png')
+    mode1.scale_by(0.4)
+    mode2 = gamebox.from_image(600, 200, 'button.png')
+    mode2.scale_by(0.4)
     while True:
         event = pygame.event.wait()
         if event.type == pygame.QUIT:
             return
         if event.type == pygame.KEYDOWN:
-            camera.clear('light green')
-            camera.draw(gamebox.from_text(400, 100, "MODE SELECTION", 40, 'black', True))
-            camera.draw(mode1)
-            camera.draw(gamebox.from_text(200, 200, "one player", 25, 'black', True))
-            camera.draw(mode2)
-            camera.draw(gamebox.from_text(600, 200, "Two players", 25, 'black', True))
-            camera.draw(gamebox.from_text(105, 300, "Instructions: ", 25, 'dark green'))
-            for i in range(4):
-                instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
-                init_screen.blit(instruction, [50, 320 + 30 * i])
-            camera.display()
             break
     while True:
-        event = pygame.event.wait()
+        event = pygame.event.poll()
+        animation()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mode1.x - mode1.width / 2 < camera.mousex < mode1.x + mode1.width / 2:
                 if mode1.y - mode1.height / 2 < camera.mousey < mode1.y + mode1.height / 2:
@@ -457,7 +476,8 @@ Have fun!'''.split('\n')
 
 def add_player(players):
     start_position = (800 - 2 * wall_size) // (player_number + 1)
-    snake_head = gamebox.from_color(wall_size // 2 + start_position * players, 300, "green", snake_size, snake_size)
+    snake_head = gamebox.from_image(wall_size // 2 + start_position * players, 300, 'head.png')
+    snake_head.scale_by(0.15)
     snake_head.next = None
     snake_head.direction = "up"  # initial direction up
     snake_tail = snake_head
@@ -470,6 +490,9 @@ def add_player(players):
 if __name__ == "__main__":
     camera = gamebox.Camera(800, 600)
     init_screen = pygame.display.set_mode([800, 600])
+    images = gamebox.load_sprite_sheet('snake_right.png', 4, 4)
+    snake = gamebox.from_image(200, 100, images[0])
+    count = 0
     snake_set = {}
     frame = 0
     start_frame()  # go to the start frame
