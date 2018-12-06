@@ -4,7 +4,8 @@
 into the public domain.
 
 As a courtesy, Luther would appreciate it if you acknowledged him in any work
-that benefited from this code.'''
+that benefited from this code.
+'''
 
 from __future__ import division  # only used in python2
 
