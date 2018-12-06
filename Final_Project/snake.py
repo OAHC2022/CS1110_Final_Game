@@ -73,14 +73,16 @@ def crab_movement(crab_location, frame):  # change here
         else:
             return crab_location.move(0, -crab_speed)
 
+
 def animation():
     global count
-    snake.image = images[count//2 % len(images)]
+    snake.image = images[count // 2 % len(images)]
     count += 1
     camera.clear('light green')
     draw_little()
     camera.draw(snake)
     camera.display()
+
 
 def draw_little():
     instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
@@ -100,7 +102,8 @@ Have fun!'''.split('\n')
     for i in range(4):
         instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
         init_screen.blit(instruction, [50, 320 + 30 * i])
-        
+
+
 def snake_generator(keys):
     """
     generate the snake using linked list data structure

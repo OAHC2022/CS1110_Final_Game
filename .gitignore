@@ -3,3 +3,7 @@ backup.py
 __pycache__
 __init.py__
 .idea/
+<<<<<<< HEAD
+=======
+.DS_Store
+>>>>>>> 3117da2bb840eb4ab32e9f9618ac356076c17319
