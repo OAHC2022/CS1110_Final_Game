@@ -3,3 +3,4 @@ backup.py
 __pycache__
 __init.py__
 .idea/
+.DS_Store
