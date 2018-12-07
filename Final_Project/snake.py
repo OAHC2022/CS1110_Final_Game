@@ -14,10 +14,10 @@ The player will lose if the snake head touches itself or touches the wall.
 The score will be calculated.
 
 Additional Requirements:
-1. two player play in the same time
-2. collectibles
+1. Two player play in the same time
+2. Collectibles
 3. Enemies
-4. Multiple game mode
+4. Animation
 """
 
 direction = ["up", "down", "left", "right"]
@@ -36,11 +36,9 @@ left_right_wall = pygame.transform.scale(wall, [wall_size, 600])
 top_down_wall = pygame.transform.scale(wall, [800 - 2 * wall_size, wall_size])  # make the wall
 grass = pygame.image.load("grass.png")
 grass = pygame.transform.scale(grass, [800 - 2 * wall_size, 600 - 2 * wall_size])
-crab = pygame.image.load("crab.jpg")  # load the crab image
-crab_size = 50
-crab = pygame.transform.scale(crab, [crab_size, crab_size])
-crab_speed = 2
+
 clock = pygame.time.Clock()
+player = "player1"
 
 
 def delete_crab():
@@ -71,8 +69,8 @@ def crab_movement(crab_location, frame):  # change here
     :param crab_location: the current crab postion
     :return: return a new Rect with new position
     """
-    player = "player1"
-    if frame % 100 == 0:
+    global player
+    if frame % 50 == 0:
         if len(snake_set.keys()) > 1:
             player = np.random.choice(["player1", "player2"])
         else:
@@ -393,8 +391,8 @@ def tick(key):
             real_lose = True
             break
 
-    camera.__dict__['_surface'].blit(crab, crab_location)  # draw the crab on the surface
-    crab_location = crab_movement(crab_location,frame)
+    camera.__dict__['_surface'].blit(crabs[frame % 5], crab_location)  # draw the crab on the surface and animation
+    crab_location = crab_movement(crab_location, frame)
     draw_points()
     if real_lose:
         """
@@ -529,6 +527,13 @@ if __name__ == "__main__":
     snake = gamebox.from_image(200, 100, images[0])
     count = 0
     snake_set = {}
+
+    crab_size = 50
+    crabs = gamebox.load_sprite_sheet('enemy.png', 1, 5)
+    for i in range(len(crabs)):
+        crabs[i] = pygame.transform.scale(crabs[i], [crab_size, crab_size])
+    crab_speed = 2
     crab_location = crab_generator()
+
     frame = 0
     start_frame()  # go to the start frame
