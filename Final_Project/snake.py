@@ -9,8 +9,10 @@ import gamebox
 
 """
 This game is to make a traditional "snake" game.
-The snake will start with a head. Then, everytime it eats a block, it will grow in length. 
-The player will lose if the snake head touches itself or touches the wall.
+The snake will start with a head. Then, every time it eats a block, it will grow in length. 
+The player will lose if the snake head touches itself, touches the wall, or the snake head touches the enemy.
+The enemy will move into the screen smoothly after the game start for a while, catching up the snake. 
+The enemy will disappear if touching the snake body, and reappear some time later.
 The score will be calculated.
 
 Additional Requirements:
@@ -96,6 +98,9 @@ def crab_touches_body(snake):
 
 
 def animation():
+    """
+    animate the crab
+    """
     global count
     snake.image = images[count // 2 % len(images)]
     count += 1
@@ -108,7 +113,6 @@ def animation():
 def draw_little():
     instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
 Hitting the boarder or any part of the snake will make you lose the game.
-Hitting the crab with body will cause you lose a block of body.
 Hitting the crab with head will cause you lose the whole game. 
 In two-player mode, player two will use "w" for up, "s" for down, "a" for left, and "d" for right.
 Have fun!'''.split('\n')
@@ -122,7 +126,7 @@ Have fun!'''.split('\n')
     camera.draw(mode2)
     camera.draw(gamebox.from_text(600, 200, "Two players", 25, 'black', True))
     camera.draw(gamebox.from_text(105, 300, "Instructions: ", 25, 'dark green'))
-    for i in range(6):
+    for i in range(5):
         instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
         init_screen.blit(instruction, [50, 320 + 30 * i])
 
@@ -133,7 +137,6 @@ def snake_generator(keys):
     snake_head is the beginning
     snake_tail is the end
     the snake sprite has two additional attributes: their next link and their current direction
-    :return:
     """
     global snake_set
     global body
@@ -166,7 +169,6 @@ def traverse_snake(crab_location):
     Traverse through all the snake parts using while loop
     starting with snake_head
     move all the snake parts and draw them respectively on the screen
-    :return:
     """
     global snake_set
     for keys in snake_set:
@@ -211,7 +213,6 @@ def snake_movement(snake, position_map):
     """
     move all the snake according to the key pressed
     :param snake: the sprite
-    :return:
     """
     key = (snake.x, snake.y)
     if key in position_map:  # find the turning point
@@ -225,7 +226,6 @@ def snake_simple_movement(snake):
     """
     the fundamental movement of the snake
     :param snake: the sprite
-    :return:
     """
     if snake.direction == "up":
         snake.y -= snake_speed / player_number  # because it traverse the snake twice
@@ -251,12 +251,11 @@ def food_generator():
 
 def check_for_turn(player, head, direction):
     """
-
+    check whether the snake head touch its body
     :param player: player1 or player2
     :param head: the head of the snake
     :param direction: Check the current direction and compare with the previous ones
                       in order to make sure the snake does not overlap itself
-    :return:
     """
     position = (head.x, head.y)
     for key in snake_set[player][3]:
@@ -275,9 +274,7 @@ def check_for_turn(player, head, direction):
 
 def event_handler1(key, player):
     """
-    handle al the key inputs
-    :param key:
-    :return:
+    handle all the key inputs
     """
     global snake_set
 
@@ -359,7 +356,6 @@ def tick(key):
     """
     the main game
     :param key: key pressed
-    :return:
     """
     global food_exist
     global crab_location
