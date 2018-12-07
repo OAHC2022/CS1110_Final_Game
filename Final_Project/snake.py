@@ -110,6 +110,8 @@ def animation():
 def draw_little():
     instructions = '''Use the arrow keys to control the snake to collect foods to grow. 
 Hitting the boarder or any part of the snake will make you lose the game.
+Hitting the crab with body will cause you lose a block of body.
+Hitting the crab with head will cause you lose the whole game. 
 In two-player mode, player two will use "w" for up, "s" for down, "a" for left, and "d" for right.
 Have fun!'''.split('\n')
     mode1 = gamebox.from_image(200, 200, 'button.png')
@@ -122,7 +124,7 @@ Have fun!'''.split('\n')
     camera.draw(mode2)
     camera.draw(gamebox.from_text(600, 200, "Two players", 25, 'black', True))
     camera.draw(gamebox.from_text(105, 300, "Instructions: ", 25, 'dark green'))
-    for i in range(4):
+    for i in range(6):
         instruction = pygame.font.SysFont("Times", 15).render(instructions[i], True, (0, 200, 0))
         init_screen.blit(instruction, [50, 320 + 30 * i])
 
